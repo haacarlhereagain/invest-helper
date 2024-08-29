@@ -1,23 +1,39 @@
 <template>
   <div class="invest-helper">
-    <NumInput
-      v-model="sum"
-      label="Sum"
-    />
-    <NumInput
-      v-model="apr"
-      label="APR (%)"
-    />
-    
-    <div class="result">
-      <span class="result__title">
-        Result
-      </span>
-      <NumInput
-        v-for="(label, period) in labels"
-        :key="period"
-        :model-value="result?.[period]"
-        :label="label"
+    <div class="invest-helper__list">
+      <div
+        v-for="place in placeList"
+        :key="place.id"
+        class="invest-helper__item invest-item"
+      >
+        <Input
+          v-model="place.title"
+          label="Place"
+          class="invest-item__title"
+        />
+        <InvestCalculator
+          v-model="place.params"
+          :result="results[place.id]"
+        />
+        <button @click="deleteCalculator(place.id)">
+          Delete place
+        </button>
+      </div>
+      <button @click="addCalculator">
+        Add place
+      </button>
+    </div>
+
+    <div
+      v-if="mostPerspectivePlace"
+      class="invest-helper__most-perspective-place most-perspective-place"
+    >
+      <div class="most-perspective-place__title">
+        {{ mostPerspectivePlace.title }}
+      </div>
+      <InvestCalculator
+        :model-value="mostPerspectivePlace.params"
+        :result="mostPerspectivePlace"
         readonly
       />
     </div>
@@ -26,44 +42,85 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import NumInput from './components/NumInput.vue';
-import { IResult } from './types/result.type';
+import { InvestCalculator, IInvestCalculatorResult } from './components/InvestCalculator';
+import { ICalculator } from './types/investHelper';
+import Input from './components/Input.vue';
 
-const sum = ref<number>();
-const apr = ref<number>();
+const placeList = ref<ICalculator[]>([]);
 
-const labels: Record<keyof IResult, string> = {
-  perDay: 'Per day',
-  perMonth: 'Per month',
-  perYear: 'Per year',
+const addCalculator = (): void => {
+  placeList.value.push({ id: crypto.randomUUID(), title: '', params: { apr: undefined, sum: undefined } });
 }
 
-const result = computed<IResult | undefined>(() => {
-  if (!sum.value || !apr.value) {
-    return;
+const deleteCalculator = (id: string): void => {
+  placeList.value = placeList.value.filter(place => place.id !== id);
+}
+
+const results = computed<Record<string,  IInvestCalculatorResult>>(() => (
+  placeList.value.reduce((result, { id, params }) => {
+    if (!params.apr || !params.sum) {
+      return result;
+    }
+    const perDay = params.apr / 365 / 100 * params.sum;
+
+    result[id] = {
+      perDay,
+      perMonth: perDay * 30,
+      perYear: perDay * 365,
+    }
+    return result;
+  }, {} as Record<string,  IInvestCalculatorResult>)
+))
+
+const mostPerspectivePlace = computed<ICalculator & IInvestCalculatorResult | undefined>(() => {
+  let result: ICalculator & IInvestCalculatorResult | undefined;
+  for (const place of placeList.value) {
+    const placeResult = results.value[place.id];
+    if (placeResult && (!result || result?.perDay < placeResult.perDay)) {
+      result = {
+        ...place,
+        ...placeResult
+      };
+    }
   }
-  const perDay = apr.value / 365 / 100 * sum.value;
-  return {
-    perDay,
-    perMonth: perDay * 30,
-    perYear: perDay * 365,
-  }
+  return result;
 })
+
 </script>
 
 <style scoped lang="scss">
 .invest-helper {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 50px;
+  align-items: start;
+
+  &__list {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    max-width: 100%;
+    overflow: auto;
+  }
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    gap: 6;
+  }
   
-  .result {
-    background-color: #f5f2f2;
-    padding: 12px;
+  .invest-item {
+    &__title {
+      :deep(label) {
+        font-weight: 700;
+      }
+    }
+  }
+
+  .most-perspective-place {
     display: flex;
     flex-direction: column;
     align-items: start;
-    gap: 12px;
 
     &__title {
       font-weight: 700;

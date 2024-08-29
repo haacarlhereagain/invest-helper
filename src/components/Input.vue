@@ -4,21 +4,24 @@
             {{ label }}
         </label>
         <input
-            v-model.number="value"
+            v-model="value"
             :id="templateId"
             :readonly="readonly"
-            type="number"
+            :type="type"
         >
     </div>
 </template>
 
 <script lang="ts" setup>
-defineProps<{
+withDefaults(defineProps<{
     label?: string;
     readonly?: boolean;
-}>();
+    type?: 'text' | 'number';
+}>(), {
+    type: 'text',
+});
 
-const value = defineModel<number>();
+const value = defineModel<number | string>();
 
 const templateId = crypto.randomUUID();
 </script>
