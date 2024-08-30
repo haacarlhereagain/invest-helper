@@ -53,7 +53,7 @@
   import { IPlace } from './InvestHelper.type';
   import { Checkbox, Input } from '../../shared/components';
   import { sortBy } from 'lodash-es';
-  import { getIncomePerDay } from '../../shared/utils';
+  import { getIncomePerDay, getIncomePerMonth } from '../../features';
   
   const placeList = ref<IPlace[]>([]);
   const attachMostPerspective = ref(false);
@@ -91,8 +91,8 @@
   
       result[id] = {
         perDay: perDayFinalized,
-        perMonth: perDayFinalized * 30,
-        perYear: perDayFinalized * 365,
+        perMonth: getIncomePerMonth(perDayFinalized),
+        perYear: getIncomePerMonth(perDayFinalized),
       }
       return result;
     }, {} as Record<string,  ICalculateResult>)
