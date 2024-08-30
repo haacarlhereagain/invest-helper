@@ -87,7 +87,7 @@ const results = computed<Record<string,  IInvestCalculatorResult>>(() => (
     if (!params.apr || !params.sum) {
       return result;
     }
-    const bonusSumNormalized = params.bonus?.sum || 0;
+    const bonusSumNormalized = params.bonus?.sum && params.bonus?.apr ? params.bonus?.sum :  0;
     const sumWithoutBonusSum = Math.max(params.sum - bonusSumNormalized, 0);
     const bonusSumAvailable = Math.min(bonusSumNormalized, params.sum);
     const perDayBonus = params.bonus?.apr && bonusSumAvailable ? getIncomePerDay(bonusSumAvailable, params.bonus?.apr) : 0;
@@ -104,17 +104,21 @@ const results = computed<Record<string,  IInvestCalculatorResult>>(() => (
 ))
 
 const mostPerspectivePlaceId = computed<string | undefined>(() => {
-  let result: ICalculator & IInvestCalculatorResult | undefined;
+  let rate = -Infinity;
+  let id: string | undefined;
   for (const place of placeList.value) {
     const placeResult = results.value[place.id];
-    if (placeResult && (!result || result?.perDay < placeResult.perDay)) {
-      result = {
-        ...place,
-        ...placeResult
-      };
+    if (!placeResult || !place.params.sum) {
+      continue;
     }
+    const placeRate = placeResult.perDay / place.params.sum;
+    if (placeRate <= rate) {
+      continue;
+    }
+    rate = placeRate;
+    id = place.id;
   }
-  return result?.id;
+  return id;
 })
 
 const placeListSorted = computed(() => {
