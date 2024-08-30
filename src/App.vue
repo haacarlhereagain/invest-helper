@@ -1,14 +1,18 @@
 <template>
   <div class="invest-helper">
-    <div class="invest-helper__list">
+    <div
+      class="invest-helper__list"
+      :class="{ 'invest-helper__list--sticked': fixMostPerspective }"
+    >
       <div
-        v-for="place in placeList"
+        v-for="place in placeListSorted"
         :key="place.id"
         class="invest-helper__item invest-item"
+        :class="{ 'invest-item--most-perspective': place.id === mostPerspectivePlaceId }"
       >
         <Input
           v-model="place.title"
-          label="Place"
+          label="Name"
           class="invest-item__title"
         />
         <InvestCalculator
@@ -23,18 +27,10 @@
         Add place
       </button>
     </div>
-
-    <div
-      v-if="mostPerspectivePlace"
-      class="invest-helper__most-perspective-place most-perspective-place"
-    >
-      <div class="most-perspective-place__title">
-        {{ mostPerspectivePlace.title }}
-      </div>
-      <InvestCalculator
-        :model-value="mostPerspectivePlace.params"
-        :result="mostPerspectivePlace"
-        readonly
+    <div class="invest-helper__most-helper-to-left">
+      <Checkbox
+        v-model="fixMostPerspective"
+        label="Fix most perspective"
       />
     </div>
   </div>
@@ -45,8 +41,11 @@ import { computed, ref } from 'vue';
 import { InvestCalculator, IInvestCalculatorResult } from './components/InvestCalculator';
 import { ICalculator } from './types/investHelper';
 import Input from './components/Input.vue';
+import Checkbox from './components/Checkbox.vue';
+import { sortBy } from 'lodash-es';
 
 const placeList = ref<ICalculator[]>([]);
+const fixMostPerspective = ref(false);
 
 const addCalculator = (): void => {
   placeList.value.push({ id: crypto.randomUUID(), title: '', params: { apr: undefined, sum: undefined } });
@@ -72,7 +71,7 @@ const results = computed<Record<string,  IInvestCalculatorResult>>(() => (
   }, {} as Record<string,  IInvestCalculatorResult>)
 ))
 
-const mostPerspectivePlace = computed<ICalculator & IInvestCalculatorResult | undefined>(() => {
+const mostPerspectivePlaceId = computed<string | undefined>(() => {
   let result: ICalculator & IInvestCalculatorResult | undefined;
   for (const place of placeList.value) {
     const placeResult = results.value[place.id];
@@ -83,7 +82,14 @@ const mostPerspectivePlace = computed<ICalculator & IInvestCalculatorResult | un
       };
     }
   }
-  return result;
+  return result?.id;
+})
+
+const placeListSorted = computed(() => {
+  if (!fixMostPerspective.value) {
+    return placeList.value;
+  }
+  return sortBy(placeList.value, (prev) => prev.id === mostPerspectivePlaceId.value ? -1 : 0);
 })
 
 </script>
@@ -92,7 +98,7 @@ const mostPerspectivePlace = computed<ICalculator & IInvestCalculatorResult | un
 .invest-helper {
   display: flex;
   flex-direction: column;
-  gap: 50px;
+  gap: 25px;
   align-items: start;
 
   &__list {
@@ -101,29 +107,32 @@ const mostPerspectivePlace = computed<ICalculator & IInvestCalculatorResult | un
     gap: 12px;
     max-width: 100%;
     overflow: auto;
+
+    &--sticked {
+      .invest-item--most-perspective {
+        position: sticky;
+        left: 0;
+      }
+    }
   }
 
   &__item {
     display: flex;
     flex-direction: column;
-    gap: 6;
+    gap: 6px;
+    padding: 6px;
+    transition: background-color ease-in-out 150ms;
   }
   
   .invest-item {
+    &--most-perspective {
+      background-color: #faf9d7;
+    }
+
     &__title {
       :deep(label) {
         font-weight: 700;
       }
-    }
-  }
-
-  .most-perspective-place {
-    display: flex;
-    flex-direction: column;
-    align-items: start;
-
-    &__title {
-      font-weight: 700;
     }
   }
 }

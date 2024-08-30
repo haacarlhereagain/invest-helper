@@ -2,6 +2,7 @@
   <div class="calculator">
     <Input
       v-model="params.sum"
+      type="number"
       label="Sum"
       :readonly="readonly"
     />
