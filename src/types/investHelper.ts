@@ -4,7 +4,11 @@ export interface ICalculator {
     params: ICalculatorParams;
 }
 
-export interface ICalculatorParams {
-    apr: number | undefined;
+export interface ICalculate {
     sum: number | undefined;
+    apr: number | undefined
+}
+
+export interface ICalculatorParams extends ICalculate {
+    bonus?: ICalculate;
 }

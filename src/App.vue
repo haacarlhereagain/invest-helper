@@ -19,11 +19,11 @@
           v-model="place.params"
           :result="results[place.id]"
         />
-        <button @click="deleteCalculator(place.id)">
+        <button @click="deletePlace(place.id)">
           Delete place
         </button>
       </div>
-      <button @click="addCalculator">
+      <button @click="addPlace">
         Add place
       </button>
     </div>
@@ -43,15 +43,27 @@ import { ICalculator } from './types/investHelper';
 import Input from './components/Input.vue';
 import Checkbox from './components/Checkbox.vue';
 import { sortBy } from 'lodash-es';
+import { getIncomePerDay } from './utils';
 
 const placeList = ref<ICalculator[]>([]);
 const fixMostPerspective = ref(false);
 
-const addCalculator = (): void => {
-  placeList.value.push({ id: crypto.randomUUID(), title: '', params: { apr: undefined, sum: undefined } });
+const addPlace = (): void => {
+  placeList.value.push({
+    id: crypto.randomUUID(),
+    title: '',
+    params: {
+      apr: undefined,
+      sum: undefined,
+      bonus: {
+        apr: undefined,
+        sum: undefined,
+      }
+    },
+  });
 }
 
-const deleteCalculator = (id: string): void => {
+const deletePlace = (id: string): void => {
   placeList.value = placeList.value.filter(place => place.id !== id);
 }
 
@@ -60,12 +72,17 @@ const results = computed<Record<string,  IInvestCalculatorResult>>(() => (
     if (!params.apr || !params.sum) {
       return result;
     }
-    const perDay = params.apr / 365 / 100 * params.sum;
+    const bonusSumNormalized = params.bonus?.sum || 0;
+    const sumWithoutBonusSum = Math.max(params.sum - bonusSumNormalized, 0);
+    const bonusSumAvailable = Math.min(bonusSumNormalized, params.sum);
+    const perDayBonus = params.bonus?.apr && bonusSumAvailable ? getIncomePerDay(bonusSumAvailable, params.bonus?.apr) : 0;
+    const perDay = getIncomePerDay(sumWithoutBonusSum, params.apr);
+    const perDayFinalized = perDayBonus + perDay;
 
     result[id] = {
-      perDay,
-      perMonth: perDay * 30,
-      perYear: perDay * 365,
+      perDay: perDayFinalized,
+      perMonth: perDayFinalized * 30,
+      perYear: perDayFinalized * 365,
     }
     return result;
   }, {} as Record<string,  IInvestCalculatorResult>)
@@ -92,6 +109,11 @@ const placeListSorted = computed(() => {
   return sortBy(placeList.value, (prev) => prev.id === mostPerspectivePlaceId.value ? -1 : 0);
 })
 
+const init = (): void => {
+  addPlace();
+}
+
+init();
 </script>
 
 <style scoped lang="scss">

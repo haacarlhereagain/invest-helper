@@ -1,0 +1,1 @@
+export { getIncomePerDay } from './money.util';

@@ -6,13 +6,24 @@
       label="Sum"
       :readonly="readonly"
     />
+    <template v-if="params.bonus">
+      <Input
+        v-model="params.bonus.sum"
+        type="number"
+        label="Bonus sum"
+      />
+      <Input
+        v-model="params.bonus.apr"
+        type="number"
+        label="Bonus APR (%)"
+      />
+    </template>
     <Input
       v-model="params.apr"
       type="number"
       label="APR (%)"
       :readonly="readonly"
     />
-    
     <div class="result">
       <span class="result__title">
         Result
