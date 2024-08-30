@@ -1,0 +1,1 @@
+export { default as InvestCalculator } from './InvestCalculator.vue';

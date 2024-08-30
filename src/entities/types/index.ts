@@ -1,0 +1,1 @@
+export type { ICalculateParams, ICalculateParamsWithBonus, ICalculateResult } from './Calculating.type';
