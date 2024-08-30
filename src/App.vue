@@ -2,7 +2,7 @@
   <div class="invest-helper">
     <div
       class="invest-helper__list"
-      :class="{ 'invest-helper__list--sticked': fixMostPerspective }"
+      :class="{ 'invest-helper__list--sticked': attachMostPerspective }"
     >
       <div
         v-for="place in placeListSorted"
@@ -27,10 +27,20 @@
         Add place
       </button>
     </div>
-    <div class="invest-helper__most-helper-to-left">
-      <Checkbox
-        v-model="fixMostPerspective"
-        label="Fix most perspective"
+    <Checkbox
+      v-model="attachMostPerspective"
+      label="Attach most perspective"
+    />
+    <div class="invest-helper-total">
+      <div class="invest-helper-total__title">
+        Total
+      </div>
+      <Input
+        v-for="(label, key) in totalLabels"
+        :key="key"
+        :label="label"
+        :model-value="total[key]"
+        readonly
       />
     </div>
   </div>
@@ -38,7 +48,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { InvestCalculator, IInvestCalculatorResult } from './components/InvestCalculator';
+import { InvestCalculator, IInvestCalculatorResult, CALCULATOR_RESULS_LABELS } from './components/InvestCalculator';
 import { ICalculator } from './types/investHelper';
 import Input from './components/Input.vue';
 import Checkbox from './components/Checkbox.vue';
@@ -46,7 +56,12 @@ import { sortBy } from 'lodash-es';
 import { getIncomePerDay } from './utils';
 
 const placeList = ref<ICalculator[]>([]);
-const fixMostPerspective = ref(false);
+const attachMostPerspective = ref(false);
+
+const totalLabels = {
+  ...CALCULATOR_RESULS_LABELS,
+  total: 'Sum',
+}
 
 const addPlace = (): void => {
   placeList.value.push({
@@ -103,7 +118,7 @@ const mostPerspectivePlaceId = computed<string | undefined>(() => {
 })
 
 const placeListSorted = computed(() => {
-  if (!fixMostPerspective.value) {
+  if (!attachMostPerspective.value) {
     return placeList.value;
   }
   return sortBy(placeList.value, (prev) => prev.id === mostPerspectivePlaceId.value ? -1 : 0);
@@ -112,6 +127,18 @@ const placeListSorted = computed(() => {
 const init = (): void => {
   addPlace();
 }
+
+const total = computed<{ total: number } & IInvestCalculatorResult>(() => placeList.value.reduce((total, { id, params }) => {
+  total.total += params.sum || 0;
+  const result = results.value[id];
+  if (!result) {
+    return total;
+  }
+  total.perDay += result.perDay;
+  total.perMonth += result.perMonth;
+  total.perYear += result.perYear;
+  return total;
+}, { total: 0, perDay: 0, perMonth: 0, perYear: 0 } as { total: number } & IInvestCalculatorResult));
 
 init();
 </script>
@@ -155,6 +182,16 @@ init();
       :deep(label) {
         font-weight: 700;
       }
+    }
+  }
+
+  .invest-helper-total {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+
+    &__title {
+      font-weight: 700;
     }
   }
 }

@@ -3,7 +3,7 @@
     <Input
       v-model="params.sum"
       type="number"
-      label="Sum"
+      label="Sum*"
       :readonly="readonly"
     />
     <template v-if="params.bonus">
@@ -21,7 +21,7 @@
     <Input
       v-model="params.apr"
       type="number"
-      label="APR (%)"
+      label="APR (%)*"
       :readonly="readonly"
     />
     <div class="result">
@@ -29,7 +29,7 @@
         Result
       </span>
       <Input
-        v-for="(label, period) in labels"
+        v-for="(label, period) in CALCULATOR_RESULS_LABELS"
         :key="period"
         :model-value="result?.[period]"
         type="number"
@@ -44,6 +44,7 @@
 import Input from '../Input.vue';
 import { IInvestCalculatorResult } from './InvestCalculator.type';
 import { ICalculatorParams } from '../../types/investHelper';
+import { CALCULATOR_RESULS_LABELS } from './InvestCalculator.constant';
 
 defineProps<{
   result: IInvestCalculatorResult | undefined;
@@ -52,11 +53,7 @@ defineProps<{
 
 const params = defineModel<ICalculatorParams>({ required: true });
 
-const labels: Record<keyof IInvestCalculatorResult, string> = {
-  perDay: 'Per day',
-  perMonth: 'Per 30 days',
-  perYear: 'Per 365 days',
-}
+
 </script>
 
 <style scoped lang="scss">
