@@ -1,32 +1,28 @@
 <template>
     <div class="invest-helper">
-      <div
-        class="invest-helper__list"
-        :class="{ 'invest-helper__list--sticked': attachMostPerspective }"
+      <ItemsWrapper
+        :item-list="placeListSorted"
+        :attached-item-id="attachMostPerspective ? mostPerspectivePlaceId : undefined"
+        @add="addPlace"
+        @delete="deletePlace($event as string)"
       >
-        <div
-          v-for="place in placeListSorted"
-          :key="place.id"
-          class="invest-helper__item invest-item"
-          :class="{ 'invest-item--most-perspective': place.id === mostPerspectivePlaceId }"
-        >
-          <Input
-            v-model="place.title"
-            label="Name"
-            class="invest-item__title"
-          />
-          <InvestCalculator
-            v-model="place.params"
-            :result="results[place.id]"
-          />
-          <button @click="deletePlace(place.id)">
-            Delete place
-          </button>
-        </div>
-        <button @click="addPlace">
-          Add place
-        </button>
-      </div>
+        <template #default="{ item: place }">
+          <div
+            class="invest-helper__item invest-item"
+            :class="{ 'invest-item--most-perspective': place.id === mostPerspectivePlaceId }"
+          >
+            <Input
+              v-model="place.title"
+              label="Name"
+              class="invest-item__title"
+            />
+            <InvestCalculator
+              v-model="place.params"
+              :result="results[place.id]"
+            />
+          </div>
+        </template>
+      </ItemsWrapper>
       <Checkbox
         v-model="attachMostPerspective"
         label="Attach most perspective"
@@ -54,6 +50,7 @@
   import { Checkbox, Input } from '../../shared/components';
   import { sortBy } from 'lodash-es';
   import { getIncomePerDay, getIncomePerMonth } from '../../features';
+  import { ItemsWrapper } from '../../shared/components';
   
   const placeList = ref<IPlace[]>([]);
   const attachMostPerspective = ref(false);
@@ -148,21 +145,6 @@
     flex-direction: column;
     gap: 25px;
     align-items: start;
-  
-    &__list {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      max-width: 100%;
-      overflow: auto;
-  
-      &--sticked {
-        .invest-item--most-perspective {
-          position: sticky;
-          left: 0;
-        }
-      }
-    }
   
     &__item {
       display: flex;
