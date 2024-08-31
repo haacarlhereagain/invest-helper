@@ -24,7 +24,7 @@
       />
       <Input
         :model-value="total.sum"
-        label="Sum"
+        label="Spent"
         readonly
       />
     </div>
