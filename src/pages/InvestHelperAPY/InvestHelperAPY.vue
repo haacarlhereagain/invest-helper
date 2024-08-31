@@ -28,8 +28,8 @@
             readonly
         />
         <Input
-            :model-value="spent"
-            label="Spent"
+            :model-value="used"
+            label="Used"
             readonly
         />
     </div>
@@ -77,7 +77,7 @@ const total = computed(() => Object.entries(incomes.value).reduce((result, [plac
     return result + incomes[incomes.length - 1].total - (placeList.value.find(place => place.id === placeId)?.params.sum || 0);
 }, 0))
 
-const spent = computed(() => placeList.value.reduce((spent, { params }) => spent + (params.sum || 0), 0));
+const used = computed(() => placeList.value.reduce((used, { params }) => used + (params.sum || 0), 0));
 
 init();
 </script>
