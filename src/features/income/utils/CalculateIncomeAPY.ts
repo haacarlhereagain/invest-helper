@@ -1,7 +1,6 @@
 import dayjs from "dayjs";
 import { ICalculateParamsWithBonus, IIncomeAPY } from "../../../entities";
 import { IPeriod } from "../../../shared/types";
-import { getIncomePerDay } from "./GetIncomePerDay";
 import { calculateIncome } from "./CalculateIncome";
 
 export const calculateIncomeAPY = (params: ICalculateParamsWithBonus, period: IPeriod): IIncomeAPY[] => {
