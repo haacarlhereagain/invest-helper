@@ -1,0 +1,1 @@
+export { getRate } from './GetRate';

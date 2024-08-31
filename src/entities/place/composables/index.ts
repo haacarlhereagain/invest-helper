@@ -1,0 +1,1 @@
+export { usePlaceList } from './UsePlaceList.composable';

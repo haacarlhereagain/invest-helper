@@ -1,1 +1,0 @@
-export { default as InvestHelper } from './InvestHelper.vue';

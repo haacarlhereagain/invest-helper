@@ -21,7 +21,7 @@
     </div>
 </template>
 
-<script lang="ts" setup generic="Item extends Record<string, unknown>">
+<script lang="ts" setup generic="Item extends Record<string, any>">
 withDefaults(defineProps<{
     itemList: Item[];
     idKey?: string;
@@ -41,7 +41,7 @@ $root: '.items-wrapper';
 
 .items-wrapper {
     display: flex;
-    align-items: center;
+    align-items: start;
     overflow: auto;
     max-width: 100%;
     

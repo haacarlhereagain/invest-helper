@@ -6,9 +6,3 @@ export interface ICalculateParams {
 export interface ICalculateParamsWithBonus extends ICalculateParams {
     bonus?: ICalculateParams;
 }
-
-export interface ICalculateResult {
-    perMonth: number;
-    perYear: number;
-    perDay: number;
-}

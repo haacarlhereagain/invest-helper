@@ -24,20 +24,15 @@
       label="APR (%)*"
       :readonly="readonly"
     />
-    <InvestCalculatorResult
-      :result="result"
-      label="Result"
-    />
+    <slot name="result" />
   </div>
 </template>
   
 <script setup lang="ts">
 import { Input } from '../../shared/components';
-import { InvestCalculatorResult } from '../InvestCalculatorResult';
-import { ICalculateParamsWithBonus, ICalculateResult } from '../../entities';
+import { ICalculateParamsWithBonus } from '../../entities';
 
 defineProps<{
-  result: ICalculateResult | undefined;
   readonly?: boolean;
 }>();
 

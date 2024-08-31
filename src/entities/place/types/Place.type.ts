@@ -1,4 +1,4 @@
-import { ICalculateParamsWithBonus } from "../../entities";
+import { ICalculateParamsWithBonus } from "../../calculating";
 
 export interface IPlace {
     id: string;

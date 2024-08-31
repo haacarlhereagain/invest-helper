@@ -1,0 +1,1 @@
+export { default as InvestHelperAPR } from './InvestHelperAPR.vue';

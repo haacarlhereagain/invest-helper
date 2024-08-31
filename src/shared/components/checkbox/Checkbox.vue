@@ -9,7 +9,7 @@
                 @input="setValue"
             />
             <label :for="templateId">
-                {{ label }}
+                <slot />
             </label>
         </div>
         
@@ -18,7 +18,6 @@
 
 <script lang="ts" setup>
 const props = withDefaults(defineProps<{
-    label?: string;
     valueList?: (string | number | boolean)[];
     trueValue?: boolean | string | number;
     falseValue?: boolean | string | number;

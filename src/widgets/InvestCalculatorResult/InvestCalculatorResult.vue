@@ -17,10 +17,10 @@
 <script lang="ts" setup>
 import { CALCULATOR_RESULS_LABELS } from './InvestCalculatorResult.constant';
 import { Input } from '../../shared/components';
-import { ICalculateResult } from '../../entities';
+import { IIncome } from '../../entities';
 
 defineProps<{
-  result: ICalculateResult | undefined;
+  result: IIncome | undefined;
   label?: string;
 }>();
 </script>
