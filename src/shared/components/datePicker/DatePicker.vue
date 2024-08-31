@@ -26,8 +26,6 @@ const emits = defineEmits<{
     (e: 'update:modelValue', v: number): void;
 }>();
 
-// const value = defineModel();
-
 const innerValue = computed({
     get() {
         return dayjs(props.modelValue).format('YYYY-MM-DD');

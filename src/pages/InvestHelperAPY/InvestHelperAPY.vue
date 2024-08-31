@@ -22,6 +22,11 @@
                 />
             </template>
         </PlaceList>
+        <Input
+            :model-value="total"
+            label="Total"
+            readonly
+        />
     </div>
 </template>
 
@@ -32,6 +37,7 @@ import { DatePicker } from '../../shared/components';
 import { PlaceList, InvestCalculatorResultAPY } from '../../widgets';
 import { IPeriod } from '../../shared/types';
 import { calculateIncomeAPY } from '../../features';
+import { Input } from '../../shared/components';
 
 const period = reactive<IPeriod>({
     from: undefined,
@@ -58,6 +64,13 @@ const incomes = computed<Record<string, IIncomeAPY[]>>(() => {
         return incomes;
     }, {} as Record<string, IIncomeAPY[]>)
 })
+
+const total = computed(() => Object.entries(incomes.value).reduce((result, [placeId, incomes]) => {
+    if (!incomes.length) {
+        return result;
+    }
+    return result + incomes[incomes.length - 1].total - (placeList.value.find(place => place.id === placeId)?.params.sum || 0);
+}, 0))
 
 init();
 </script>

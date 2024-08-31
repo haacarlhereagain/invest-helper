@@ -11,7 +11,7 @@
     </Table>
     <Input
         :model-value="total"
-        label="Total"
+        label="Item total"
         readonly
     />
 </template>

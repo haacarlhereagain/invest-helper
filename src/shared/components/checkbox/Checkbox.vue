@@ -18,7 +18,6 @@
 
 <script lang="ts" setup>
 const props = withDefaults(defineProps<{
-    valueList?: (string | number | boolean)[];
     trueValue?: boolean | string | number;
     falseValue?: boolean | string | number;
 }>(), {
